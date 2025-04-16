@@ -5,8 +5,6 @@ name: Build and deploy Node.js app to Azure Web App - express
 
 on:
   push:
-    paths:
-      - prisma/migrations/**
     branches:
       - main
   workflow_dispatch:
