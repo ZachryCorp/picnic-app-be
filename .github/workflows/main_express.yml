@@ -57,17 +57,25 @@ jobs:
       - name: Unzip artifact for deployment
         run: unzip release.zip
 
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '22.x'
+
+      - name: Install prod dependencies
+        run: npm ci --production
+
+      - name: Run database migrations
+        run: npx prisma migrate deploy
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+
       - name: Login to Azure
         uses: azure/login@v2
         with:
           client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_6F2C96181D0045B5A4598DFBA85DE504 }}
           tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_B8E5AEEF60EA4CDAA8A502FC80A68B17 }}
           subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_FC0D36E93D524E2D92BEEEFBDECDEF84 }}
-
-      - name: Run database migrations
-        run: npx prisma migrate deploy
-        env:
-          DATABASE_URL: ${{ secrets.DATABASE_URL }}
 
       - name: 'Deploy to Azure Web App'
         id: deploy-to-webapp
