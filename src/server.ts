@@ -1,6 +1,5 @@
 import express, { Express, Request, Response, NextFunction } from 'express';
 import cors from 'cors';
-import { connect } from './config/database';
 
 const app: Express = express();
 
@@ -22,16 +21,8 @@ app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
 // Start server
 const PORT: number = parseInt(process.env.PORT || '3000', 10);
 
-// Connect to database and start server
-connect()
-  .then(() => {
-    app.listen(PORT, () => {
-      console.log(`Server is running on port ${PORT}`);
-    });
-  })
-  .catch((err: Error) => {
-    console.error('Failed to connect to database:', err);
-    process.exit(1);
-  });
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
+});
 
 export default app;

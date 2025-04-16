@@ -1,14 +1,16 @@
 import express, { Request, Response } from 'express';
-import { pool, sql } from '../config/database';
-import { User } from '../models/user';
+
+import { PrismaClient } from '@prisma/client';
+
+const prisma = new PrismaClient();
 
 const router = express.Router();
 
 // Get all users
 router.get('/', async (req: Request, res: Response): Promise<void> => {
   try {
-    const result = await pool.request().query<User[]>`SELECT * FROM users`;
-    res.json(result.recordset);
+    const result = await prisma.user.findMany();
+    res.json(result);
   } catch (err) {
     res.status(500).json({ message: 'Error fetching users', error: err });
   }
@@ -20,14 +22,14 @@ router.get<{ id: string }>(
   async (req: Request<{ id: string }>, res: Response): Promise<void> => {
     try {
       const { id } = req.params;
-      const result = await pool.request().query<
-        User[]
-      >`SELECT * FROM users WHERE id = ${id}`;
-      if (result.recordset.length === 0) {
+      const result = await prisma.user.findUnique({
+        where: { id: parseInt(id) },
+      });
+      if (!result) {
         res.status(404).json({ message: 'User not found' });
         return;
       }
-      res.json(result.recordset[0]);
+      res.json(result);
     } catch (err) {
       res.status(500).json({ message: 'Error fetching user', error: err });
     }
@@ -37,13 +39,11 @@ router.get<{ id: string }>(
 // Create user
 router.post('/', async (req: Request, res: Response): Promise<void> => {
   try {
-    const { email, role } = req.body;
-    const result = await pool.request().query`
-      INSERT INTO users (email, role)
-      OUTPUT INSERTED.*
-      VALUES (${email}, ${role})
-    `;
-    res.status(201).json(result.recordset[0]);
+    const { email } = req.body;
+    const result = await prisma.user.create({
+      data: { email, role: 'user' },
+    });
+    res.status(201).json(result);
   } catch (err) {
     res.status(500).json({ message: 'Error creating user', error: err });
   }
@@ -56,17 +56,15 @@ router.put<{ id: string }>(
     try {
       const { id } = req.params;
       const { email, role } = req.body;
-      const result = await pool.request().query`
-      UPDATE users
-      SET email = ${email}, role = ${role}, updated_at = GETDATE()
-      OUTPUT INSERTED.*
-      WHERE id = ${id}
-    `;
-      if (result.recordset.length === 0) {
+      const result = await prisma.user.update({
+        where: { id: parseInt(id) },
+        data: { email },
+      });
+      if (!result) {
         res.status(404).json({ message: 'User not found' });
         return;
       }
-      res.json(result.recordset[0]);
+      res.json(result);
     } catch (err) {
       res.status(500).json({ message: 'Error updating user', error: err });
     }
@@ -79,12 +77,10 @@ router.delete<{ id: string }>(
   async (req: Request<{ id: string }>, res: Response): Promise<void> => {
     try {
       const { id } = req.params;
-      const result = await pool.request().query`
-      DELETE FROM users
-      OUTPUT DELETED.*
-      WHERE id = ${id}
-    `;
-      if (result.recordset.length === 0) {
+      const result = await prisma.user.delete({
+        where: { id: parseInt(id) },
+      });
+      if (!result) {
         res.status(404).json({ message: 'User not found' });
         return;
       }

@@ -1,0 +1,32 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlserver"
+  url      = env("DATABASE_URL")
+}
+
+model Request {
+  id          Int       @id(map: "PK_requests") @default(autoincrement())
+  userId      Int
+  title       String    @db.NVarChar(100)
+  description String?   @db.NVarChar(Max)
+  status      String    @default("pending", map: "DEFAULT_requests_status") @db.NVarChar(20)
+  createdAt   DateTime? @default(now()) @db.DateTime
+  updatedAt   DateTime? @default(now()) @db.DateTime
+  users       User      @relation(fields: [userId], references: [id], onUpdate: NoAction, map: "FK_requests_users")
+
+  @@map("requests")
+}
+
+model User {
+  id         Int       @id(map: "PK_users") @default(autoincrement())
+  email      String    @db.NVarChar(100)
+  role       String    @db.NVarChar(20)
+  createdAt  DateTime? @default(now()) @db.DateTime
+  updatedAt  DateTime? @default(now()) @db.DateTime
+  requests   Request[]
+
+  @@map("users")
+}

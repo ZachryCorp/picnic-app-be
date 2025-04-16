@@ -1,8 +1,7 @@
-import express from 'express';
+import express, { Request, Response } from 'express';
+
 import userRoutes from './users';
 import requestRoutes from './requests';
-import { Request, Response } from 'express';
-import { pool } from '../config/database';
 
 const router = express.Router();
 
