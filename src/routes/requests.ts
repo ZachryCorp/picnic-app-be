@@ -43,7 +43,7 @@ router.post('/', async (req: Request, res: Response): Promise<void> => {
       data: {
         users: {
           connect: {
-            id: userId,
+            id: parseInt(userId),
           },
         },
         title,
@@ -53,6 +53,7 @@ router.post('/', async (req: Request, res: Response): Promise<void> => {
     });
     res.status(201).json(result);
   } catch (err) {
+    console.error('Error creating request:', err);
     res.status(500).json({ message: 'Error creating request', error: err });
   }
 });
@@ -69,7 +70,7 @@ router.put<{ id: string }>(
         data: {
           users: {
             connect: {
-              id: userId,
+              id: parseInt(userId),
             },
           },
           title,
@@ -83,6 +84,7 @@ router.put<{ id: string }>(
       }
       res.json(result);
     } catch (err) {
+      console.error('Error updating request:', err);
       res.status(500).json({ message: 'Error updating request', error: err });
     }
   }
