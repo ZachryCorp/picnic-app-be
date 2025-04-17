@@ -38,10 +38,14 @@ router.get<{ id: string }>(
 // Create request
 router.post('/', async (req: Request, res: Response): Promise<void> => {
   try {
-    const { user_id, title, description, status } = req.body;
+    const { userId, title, description, status } = req.body;
     const result = await prisma.request.create({
       data: {
-        userId: user_id,
+        users: {
+          connect: {
+            id: userId,
+          },
+        },
         title,
         description,
         status: status || 'pending',
@@ -59,11 +63,15 @@ router.put<{ id: string }>(
   async (req: Request<{ id: string }>, res: Response): Promise<void> => {
     try {
       const { id } = req.params;
-      const { user_id, title, description, status } = req.body;
+      const { userId, title, description, status } = req.body;
       const result = await prisma.request.update({
         where: { id: parseInt(id) },
         data: {
-          userId: user_id,
+          users: {
+            connect: {
+              id: userId,
+            },
+          },
           title,
           description,
           status: status || 'pending',
