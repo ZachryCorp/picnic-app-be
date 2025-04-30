@@ -7,26 +7,32 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Request {
-  id          Int       @id(map: "PK_requests") @default(autoincrement())
-  userId      Int
-  title       String    @db.NVarChar(100)
-  description String?   @db.NVarChar(Max)
-  status      String    @default("pending", map: "DEFAULT_requests_status") @db.NVarChar(20)
-  createdAt   DateTime? @default(now()) @db.DateTime
-  updatedAt   DateTime? @default(now()) @db.DateTime
-  users       User      @relation(fields: [userId], references: [id], onUpdate: NoAction, map: "FK_requests_users")
+model Submission {
+  id         Int       @id(map: "PK_submissions") @default(autoincrement())
+  park       String    @db.NVarChar(100)
+  fullTicket Int       @db.Int
+  mealTicket Int       @db.Int
+  payrollDeduction Boolean @db.Bit
+  deductionPeriod Int @db.Int
+  createdAt  DateTime? @default(now()) @db.DateTime
+  updatedAt  DateTime? @default(now()) @db.DateTime
+  user       User      @relation(fields: [userId], references: [id], onUpdate: NoAction, map: "FK_submissions_users")
+  userId     Int
 
-  @@map("requests")
+  @@map("submissions")
 }
 
 model User {
   id         Int       @id(map: "PK_users") @default(autoincrement())
+  lastName   String    @db.NVarChar(100) @default("")
+  firstName  String?   @db.NVarChar(100)
+  ein        Int?      @db.Int
   email      String    @db.NVarChar(100)
-  role       String    @db.NVarChar(20)
+  children   Int       @db.Int @default(0)
+  guest      Boolean   @db.Bit @default(false)
   createdAt  DateTime? @default(now()) @db.DateTime
   updatedAt  DateTime? @default(now()) @db.DateTime
-  requests   Request[]
+  submissions Submission[]
 
   @@map("users")
 }

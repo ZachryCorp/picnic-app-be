@@ -1,12 +1,12 @@
 import express, { Request, Response } from 'express';
 
 import userRoutes from './users';
-import requestRoutes from './requests';
+import submissionRoutes from './submissions';
 
 const router = express.Router();
 
 router.use('/users', userRoutes);
-router.use('/requests', requestRoutes);
+router.use('/submissions', submissionRoutes);
 
 // Health check endpoint
 router.get('/health', (req: Request, res: Response): void => {

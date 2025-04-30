@@ -9,7 +9,12 @@ const router = express.Router();
 // Get all users
 router.get('/', async (req: Request, res: Response): Promise<void> => {
   try {
-    const result = await prisma.user.findMany();
+    const { include } = req.query;
+    const result = await prisma.user.findMany({
+      include: {
+        submissions: include === 'submissions' ? true : false,
+      },
+    });
     res.json(result);
   } catch (err) {
     res.status(500).json({ message: 'Error fetching users', error: err });
@@ -22,8 +27,12 @@ router.get<{ id: string }>(
   async (req: Request<{ id: string }>, res: Response): Promise<void> => {
     try {
       const { id } = req.params;
+      const { include } = req.query;
       const result = await prisma.user.findUnique({
         where: { id: parseInt(id) },
+        include: {
+          submissions: include === 'submissions' ? true : false,
+        },
       });
       if (!result) {
         res.status(404).json({ message: 'User not found' });
@@ -41,7 +50,7 @@ router.post('/', async (req: Request, res: Response): Promise<void> => {
   try {
     const { email } = req.body;
     const result = await prisma.user.create({
-      data: { email, role: 'user' },
+      data: { email },
     });
     res.status(201).json(result);
   } catch (err) {
@@ -55,7 +64,7 @@ router.put<{ id: string }>(
   async (req: Request<{ id: string }>, res: Response): Promise<void> => {
     try {
       const { id } = req.params;
-      const { email, role } = req.body;
+      const { email } = req.body;
       const result = await prisma.user.update({
         where: { id: parseInt(id) },
         data: { email },

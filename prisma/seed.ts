@@ -4,37 +4,33 @@ async function main() {
   const alice = await prisma.user.create({
     data: {
       email: 'alice@prisma.io',
-      role: 'admin',
-      requests: {
-        create: {
-          title: 'Six Flags',
-          description: 'The best theme park in the world',
-          status: 'pending',
-        },
-      },
+      lastName: 'Smith',
+      firstName: 'Alice',
+      ein: 123456789,
+      children: 0,
+      guest: false,
     },
   });
   const bob = await prisma.user.create({
     data: {
       email: 'bob@prisma.io',
-      role: 'user',
-      requests: {
-        create: [
-          {
-            title: 'Fiesta Texas',
-            description: 'The best theme park in the world',
-            status: 'pending',
-          },
-          {
-            title: 'Six Flags Over Texas',
-            description: 'The best theme park in the world',
-            status: 'pending',
-          },
-        ],
-      },
+      lastName: 'Smith',
+      firstName: 'Bob',
+      ein: 987654321,
+      children: 0,
+      guest: false,
     },
   });
-  console.log({ alice, bob });
+  const submissions = await prisma.submission.create({
+    data: {
+      userId: alice.id,
+      park: 'Fiesta Texas',
+      fullTicket: 100,
+      mealTicket: 50,
+      payrollDeduction: true,
+      deductionPeriod: 1,
+    },
+  });
 }
 main()
   .then(async () => {
