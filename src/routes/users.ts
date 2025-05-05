@@ -21,17 +21,26 @@ router.get('/', async (req: Request, res: Response): Promise<void> => {
   }
 });
 
-// Get user by ID
-router.get<{ id: string }>(
-  '/:id',
-  async (req: Request<{ id: string }>, res: Response): Promise<void> => {
+// Get user by EIN
+router.get<{ ein: string }>(
+  '/:ein',
+  async (req: Request<{ ein: string }>, res: Response): Promise<void> => {
     try {
-      const { id } = req.params;
-      const { include } = req.query;
-      const result = await prisma.user.findUnique({
-        where: { id: parseInt(id) },
-        include: {
-          submissions: include === 'submissions' ? true : false,
+      const { ein } = req.params;
+      const { lastName } = req.query;
+
+      // Ensure lastName is provided
+      if (!lastName || typeof lastName !== 'string') {
+        res
+          .status(400)
+          .json({ message: 'Missing or invalid lastName query parameter' });
+        return;
+      }
+
+      const result = await prisma.user.findFirst({
+        where: {
+          ein: parseInt(ein),
+          lastName: lastName as string,
         },
       });
       if (!result) {
@@ -48,15 +57,51 @@ router.get<{ id: string }>(
 // Create user
 router.post('/', async (req: Request, res: Response): Promise<void> => {
   try {
-    const { email } = req.body;
+    const { lastName, firstName, ein, jobNumber, email, children, guest } =
+      req.body;
     const result = await prisma.user.create({
-      data: { email },
+      data: {
+        lastName,
+        firstName,
+        ein,
+        jobNumber,
+        email,
+        children,
+        guest,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
     });
     res.status(201).json(result);
   } catch (err) {
     res.status(500).json({ message: 'Error creating user', error: err });
   }
 });
+
+// Authenticate user
+router.post(
+  '/authenticate',
+  async (req: Request, res: Response): Promise<void> => {
+    try {
+      const { ein, lastName } = req.body;
+      const result = await prisma.user.findFirst({
+        where: {
+          ein: parseInt(ein),
+          lastName,
+        },
+      });
+      if (!result) {
+        res.status(404).json({ message: 'User not found' });
+        return;
+      }
+      res.json(result);
+    } catch (err) {
+      res
+        .status(500)
+        .json({ message: 'Error authenticating user', error: err });
+    }
+  }
+);
 
 // Update user
 router.put<{ id: string }>(

@@ -26,7 +26,8 @@ model User {
   id         Int       @id(map: "PK_users") @default(autoincrement())
   lastName   String    @db.NVarChar(100) @default("")
   firstName  String?   @db.NVarChar(100)
-  ein        Int?      @db.Int
+  ein        Int?      @db.Int @unique
+  jobNumber  String?   @db.NVarChar(100)
   email      String    @db.NVarChar(100)
   children   Int       @db.Int @default(0)
   guest      Boolean   @db.Bit @default(false)
