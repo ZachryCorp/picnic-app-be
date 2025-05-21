@@ -8,7 +8,7 @@ const createRandomUser = () => {
     email: faker.internet.email(),
     lastName: faker.person.lastName(),
     firstName: faker.person.firstName(),
-    ein: faker.number.int({ min: 100000000, max: 999999999 }),
+    ein: faker.number.int({ min: 100000, max: 99999999 }),
     children: faker.number.int({ min: 0, max: 10 }),
     guest: faker.datatype.boolean(),
   };
@@ -30,10 +30,10 @@ async function main() {
         park: ['Fiesta Texas', 'Six Flags', 'Carowinds'][
           Math.floor(Math.random() * 3)
         ],
-        fullTicket: faker.number.int({ min: 100, max: 1000 }),
-        mealTicket: faker.number.int({ min: 100, max: 1000 }),
+        fullTicket: faker.number.int({ min: 1, max: 10 }),
+        mealTicket: faker.number.int({ min: 1, max: 10 }),
         payrollDeduction: faker.datatype.boolean(),
-        deductionPeriod: faker.number.int({ min: 1, max: 12 }),
+        deductionPeriod: faker.number.int({ min: 1, max: 4 }),
         childrenVerification: faker.datatype.boolean(),
       },
     });
