@@ -51,6 +51,33 @@ router.post('/', async (req: Request, res: Response): Promise<void> => {
 });
 
 // TODO: Add a route to update a submission
+router.put('/:id', async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { id } = req.params;
+    const {
+      park,
+      fullTicket,
+      mealTicket,
+      childrenVerification,
+      payrollDeduction,
+      deductionPeriod,
+    } = req.body;
+    const submission = await prisma.submission.update({
+      where: { id: parseInt(id) },
+      data: {
+        park,
+        fullTicket,
+        mealTicket,
+        childrenVerification,
+        payrollDeduction,
+        deductionPeriod,
+      },
+    });
+    res.json(submission);
+  } catch (err) {
+    res.status(500).json({ message: 'Error updating submission', error: err });
+  }
+});
 
 // TODO: Add a route to delete a submission
 
