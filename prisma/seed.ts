@@ -1,36 +1,43 @@
 import { PrismaClient } from '@prisma/client';
+import { faker } from '@faker-js/faker';
+
 const prisma = new PrismaClient();
+
+const createRandomUser = () => {
+  return {
+    email: faker.internet.email(),
+    lastName: faker.person.lastName(),
+    firstName: faker.person.firstName(),
+    ein: faker.number.int({ min: 100000000, max: 999999999 }),
+    children: faker.number.int({ min: 0, max: 10 }),
+    guest: faker.datatype.boolean(),
+  };
+};
+
 async function main() {
-  const alice = await prisma.user.create({
-    data: {
-      email: 'alice@prisma.io',
-      lastName: 'Smith',
-      firstName: 'Alice',
-      ein: 123456789,
-      children: 0,
-      guest: false,
-    },
-  });
-  const bob = await prisma.user.create({
-    data: {
-      email: 'bob@prisma.io',
-      lastName: 'Smith',
-      firstName: 'Bob',
-      ein: 987654321,
-      children: 0,
-      guest: false,
-    },
-  });
-  const submissions = await prisma.submission.create({
-    data: {
-      userId: alice.id,
-      park: 'Fiesta Texas',
-      fullTicket: 100,
-      mealTicket: 50,
-      payrollDeduction: true,
-      deductionPeriod: 1,
-    },
-  });
+  const users: any[] = [];
+  for (const user of Array.from({ length: 100 }, createRandomUser)) {
+    const u = await prisma.user.create({
+      data: user,
+    });
+    users.push(u);
+  }
+
+  for (let i = 0; i < 100; i++) {
+    const submissions = await prisma.submission.create({
+      data: {
+        userId: users[i].id,
+        park: ['Fiesta Texas', 'Six Flags', 'Carowinds'][
+          Math.floor(Math.random() * 3)
+        ],
+        fullTicket: faker.number.int({ min: 100, max: 1000 }),
+        mealTicket: faker.number.int({ min: 100, max: 1000 }),
+        payrollDeduction: faker.datatype.boolean(),
+        deductionPeriod: faker.number.int({ min: 1, max: 12 }),
+        childrenVerification: faker.datatype.boolean(),
+      },
+    });
+  }
 }
 main()
   .then(async () => {
