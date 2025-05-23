@@ -31,7 +31,7 @@ router.post('/', async (req: Request, res: Response): Promise<void> => {
       mealTicket,
       childrenVerification,
       payrollDeduction,
-      deductionPeriod,
+      deductionPeriods,
     } = req.body;
     const submission = await prisma.submission.create({
       data: {
@@ -41,7 +41,7 @@ router.post('/', async (req: Request, res: Response): Promise<void> => {
         mealTicket,
         childrenVerification,
         payrollDeduction,
-        deductionPeriod,
+        deductionPeriods,
       },
     });
     res.json(submission);
@@ -60,7 +60,7 @@ router.put('/:id', async (req: Request, res: Response): Promise<void> => {
       mealTicket,
       childrenVerification,
       payrollDeduction,
-      deductionPeriod,
+      deductionPeriods,
     } = req.body;
     const submission = await prisma.submission.update({
       where: { id: parseInt(id) },
@@ -70,7 +70,7 @@ router.put('/:id', async (req: Request, res: Response): Promise<void> => {
         mealTicket,
         childrenVerification,
         payrollDeduction,
-        deductionPeriod,
+        deductionPeriods,
       },
     });
     res.json(submission);

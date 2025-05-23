@@ -8,17 +8,24 @@ datasource db {
 }
 
 model Submission {
-  id         Int       @id(map: "PK_submissions") @default(autoincrement())
-  park       String    @db.NVarChar(100)
-  fullTicket Int       @db.Int
-  mealTicket Int       @db.Int
-  childrenVerification Boolean @db.Bit @default(false)
-  payrollDeduction Boolean @db.Bit @default(false)
-  deductionPeriod Int @db.Int
-  createdAt  DateTime? @default(now()) @db.DateTime
-  updatedAt  DateTime? @default(now()) @db.DateTime
-  user       User      @relation(fields: [userId], references: [id], onUpdate: NoAction, map: "FK_submissions_users")
-  userId     Int
+  id                       Int       @id(map: "PK_submissions") @default(autoincrement())
+  park                     String    @db.NVarChar(100)
+  guest                    Boolean   @db.Bit @default(false)
+  fullTicket               Int       @db.Int
+  mealTicket               Int       @db.Int
+  additionalFullTicket     Int       @db.Int @default(0)
+  additionalMealTicket     Int       @db.Int @default(0)
+  ticketsToBeDistributed   Int       @db.Int @default(0)
+  ticketNumber             String    @db.NVarChar(100) @default("")
+  childrenVerification     Boolean   @db.Bit @default(false)
+  pendingDependentChildren Int       @db.Int @default(0)
+  payrollDeduction         Boolean   @db.Bit @default(false)
+  deductionPeriods         Int       @db.Int @default(0)
+  notes                    String    @db.NVarChar(1000) @default("")
+  createdAt                DateTime? @default(now()) @db.DateTime
+  updatedAt                DateTime? @default(now()) @db.DateTime
+  user                     User      @relation(fields: [userId], references: [id], onUpdate: NoAction, map: "FK_submissions_users")
+  userId                   Int
 
   @@map("submissions")
 }

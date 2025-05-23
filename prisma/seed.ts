@@ -11,6 +11,14 @@ const createRandomUser = () => {
     ein: faker.number.int({ min: 100000, max: 99999999 }),
     children: faker.number.int({ min: 0, max: 10 }),
     guest: faker.datatype.boolean(),
+    jobNumber: [
+      'Equipment Group',
+      'Estimating',
+      'Human Resources',
+      'Acctg., Fin., Payroll, and Trsry',
+      'Business Admin and BPC',
+      'Corporate Mgmt',
+    ][Math.floor(Math.random() * 5)],
   };
 };
 
@@ -27,14 +35,19 @@ async function main() {
     const submissions = await prisma.submission.create({
       data: {
         userId: users[i].id,
-        park: ['Fiesta Texas', 'Six Flags', 'Carowinds'][
+        park: ['Fiesta Texas', 'Six Flags Over Texas', 'Carowinds'][
           Math.floor(Math.random() * 3)
         ],
         fullTicket: faker.number.int({ min: 1, max: 10 }),
         mealTicket: faker.number.int({ min: 1, max: 10 }),
+        additionalFullTicket: faker.number.int({ min: 0, max: 10 }),
+        additionalMealTicket: faker.number.int({ min: 0, max: 10 }),
         payrollDeduction: faker.datatype.boolean(),
-        deductionPeriod: faker.number.int({ min: 1, max: 4 }),
+        deductionPeriods: faker.number.int({ min: 1, max: 4 }),
         childrenVerification: faker.datatype.boolean(),
+        pendingDependentChildren: faker.number.int({ min: 0, max: 10 }),
+        ticketsToBeDistributed: faker.number.int({ min: 1, max: 10 }),
+        notes: faker.lorem.sentence(),
       },
     });
   }
