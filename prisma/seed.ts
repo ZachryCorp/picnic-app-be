@@ -32,21 +32,33 @@ async function main() {
   }
 
   for (let i = 0; i < 100; i++) {
+    const payrollDeduction = faker.datatype.boolean();
+    const childrenVerification = faker.datatype.boolean();
+    const additionalFullTicket = faker.number.int({ min: 0, max: 10 });
+    const additionalMealTicket = faker.number.int({ min: 0, max: 10 });
+    const ticketsToBeDistributed = additionalFullTicket + additionalMealTicket;
+
     const submissions = await prisma.submission.create({
       data: {
         userId: users[i].id,
         park: ['Fiesta Texas', 'Six Flags Over Texas', 'Carowinds'][
           Math.floor(Math.random() * 3)
         ],
+        guest: faker.datatype.boolean(),
         fullTicket: faker.number.int({ min: 1, max: 10 }),
         mealTicket: faker.number.int({ min: 1, max: 10 }),
         additionalFullTicket: faker.number.int({ min: 0, max: 10 }),
         additionalMealTicket: faker.number.int({ min: 0, max: 10 }),
-        payrollDeduction: faker.datatype.boolean(),
-        deductionPeriods: faker.number.int({ min: 1, max: 4 }),
-        childrenVerification: faker.datatype.boolean(),
-        pendingDependentChildren: faker.number.int({ min: 0, max: 10 }),
-        ticketsToBeDistributed: faker.number.int({ min: 1, max: 10 }),
+        payrollDeduction,
+        deductionPeriods: payrollDeduction
+          ? faker.number.int({ min: 1, max: 4 })
+          : 0,
+        childrenVerification,
+        pendingDependentChildren: childrenVerification
+          ? faker.number.int({ min: 0, max: 10 })
+          : 0,
+        ticketsToBeDistributed,
+        ticketNumber: faker.string.alphanumeric(10),
         notes: faker.lorem.sentence(),
       },
     });
